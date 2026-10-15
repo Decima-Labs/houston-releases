@@ -1,0 +1,17 @@
+{
+  "name": "houston",
+  "description": "Houston's Claude Code plugins: live activity for the Houston Mac app, and engineering skills with working rules for any session.",
+  "owner": { "name": "Decima Labs" },
+  "plugins": [
+    {
+      "name": "houston",
+      "source": "./houston",
+      "description": "Streams what each Claude Code agent is doing to Houston."
+    },
+    {
+      "name": "houston-skills",
+      "source": "./houston-skills",
+      "description": "Engineering skills (code review, TDD, diagnosing bugs, design, writing) and working rules added to every session."
+    }
+  ]
+}

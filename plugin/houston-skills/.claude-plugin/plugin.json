@@ -1,0 +1,14 @@
+{
+  "name": "houston-skills",
+  "description": "Engineering skills for code review, test-driven development, diagnosing bugs, design and writing, and a short set of working rules added to every session.",
+  "version": "1.0.0",
+  "author": { "name": "Decima Labs" },
+  "userConfig": {
+    "rules": {
+      "type": "boolean",
+      "title": "Working rules",
+      "description": "Add the working rules (ask the question you have, answer first, finish the whole scope, and the rest) to every session as context. Off leaves the skills on their own.",
+      "default": true
+    }
+  }
+}

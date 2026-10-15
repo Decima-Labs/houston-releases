@@ -1,0 +1,19 @@
+{
+  "name": "houston",
+  "description": "Houston's Claude Code plugins, for a Houston installed from github.com/Decima-Labs/houston-releases.",
+  "owner": {
+    "name": "Decima Labs"
+  },
+  "plugins": [
+    {
+      "name": "houston",
+      "source": "./plugin/houston",
+      "description": "Streams what each Claude Code agent is doing to Houston."
+    },
+    {
+      "name": "houston-skills",
+      "source": "./plugin/houston-skills",
+      "description": "Engineering skills (code review, TDD, diagnosing bugs, design, writing) and working rules added to every session."
+    }
+  ]
+}

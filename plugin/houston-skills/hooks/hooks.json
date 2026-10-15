@@ -1,0 +1,12 @@
+{
+  "description": "Adds the working rules to every session as context, unless they're turned off.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/rules.sh\"", "timeout": 10 }
+        ]
+      }
+    ]
+  }
+}
