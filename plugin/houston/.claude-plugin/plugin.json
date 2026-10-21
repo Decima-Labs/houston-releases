@@ -1,6 +1,6 @@
 {
   "name": "houston",
-  "description": "Streams what each Claude Code agent is doing to Houston, the Mac app: prompts, tool calls, permission requests, notifications, subagents and stops.",
-  "version": "0.2.0",
+  "description": "Streams what each Claude Code agent is doing to Houston, the Mac app: prompts, tool calls, permission requests, notifications, subagents and stops; and the progress tool, whose plans Houston shows with their time left.",
+  "version": "0.3.0",
   "author": { "name": "Decima Labs" }
 }

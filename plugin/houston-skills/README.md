@@ -8,7 +8,7 @@ Engineering skills for Claude Code, and a short set of working rules added to ev
 claude plugin install houston-skills --marketplace Decima-Labs/houston-releases
 ```
 
-That adds the `houston` marketplace and installs the plugin for every project. Sessions you start afterwards load it; in a session that's already open, run `/reload-plugins`. Houston's first-run flow and its Settings run the same install in one click. To remove it: `claude plugin uninstall houston-skills@houston`.
+That adds the `houston` marketplace and installs the plugin for every project. Sessions you start afterwards load it; in a session that's already open, run `/reload-plugins`. Houston's first-run flow runs the same install in one click. To remove it: `claude plugin uninstall houston-skills@houston`.
 
 ## The skills
 
@@ -34,7 +34,7 @@ A SessionStart hook adds [`rules/rules.md`](rules/rules.md) to every session as 
 
 To turn the rules off and keep the skills, use either:
 
-- the plugin's **Working rules** option: `claude plugin configure houston-skills@houston` (or `/plugin configure houston-skills@houston` in a session), or `--config rules=false` when you install;
+- the plugin's **Working rules** option: the switch on the plugin's row in Houston's Toolkit › Plugins, `claude plugin configure houston-skills@houston` (or `/plugin configure houston-skills@houston` in a session), or `--config rules=false` when you install;
 - `HOUSTON_RULES=off` in the environment Claude Code runs in, such as `"env": { "HOUSTON_RULES": "off" }` in `~/.claude/settings.json`. `0`, `false` and `no` work too.
 
 Either one turns them off. The hook prints nothing then, and it always exits 0, so a session never fails to start over it.

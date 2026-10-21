@@ -19,15 +19,24 @@ exec 2>/dev/null
 # subagent's id and type; and a prompt's first 80 characters. For the Agent
 # tool (Task in older Claude Code), the subagent type it asked for and whether
 # it runs in the background, never its prompt; and when a subagent finishes,
-# its last message and where its transcript is. Every string is cut to 300
-# characters, so no event can grow Houston's memory.
+# its last message and where its transcript is. The session's permission mode,
+# and on a stop how many shells it runs in the background, never their commands.
+# For a Bash call that opened or pushed to a pull request, which one, as Claude
+# Code itself reads the command: its number, link and branch, never the output.
+# Every string is cut to 300 characters, so no event can grow Houston's memory.
 exec 3<&0
 /usr/bin/jq -c '
   (.tool_name == "Agent" or .tool_name == "Task") as $spawns
   | (.hook_event_name == "SubagentStop") as $finished
   | {
       hook_event_name, session_id, cwd, source, tool_name, tool_use_id,
-      message, title, notification_type, error, agent_id, agent_type,
+      message, title, notification_type, error, agent_id, agent_type, permission_mode,
+      shells: (.background_tasks | if type == "array" then map(select(type == "object" and .type == "shell")) | length else null end),
+      git: (if .hook_event_name == "PostToolUse" and .tool_name == "Bash" then (.tool_response | if type == "object" then .gitOperation else null end
+        | if type == "object" then {
+            pr: (.pr | if type == "object" then {number, url, action} else null end),
+            push: (.push | if type == "object" then {branch} else null end)
+          } else null end) else null end),
       prompt: (.prompt | if type == "string" then .[0:80] else null end),
       tool_input: (.tool_input | if type == "object" then
         {description, file_path, notebook_path} + (if $spawns then {subagent_type, run_in_background} else {} end)

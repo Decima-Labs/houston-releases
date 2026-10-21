@@ -1,7 +1,7 @@
 {
   "name": "houston-skills",
   "description": "Engineering skills for code review, test-driven development, diagnosing bugs, design and writing, and a short set of working rules added to every session.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": { "name": "Decima Labs" },
   "userConfig": {
     "rules": {

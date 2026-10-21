@@ -6,7 +6,7 @@
     {
       "name": "houston",
       "source": "./houston",
-      "description": "Streams what each Claude Code agent is doing to Houston."
+      "description": "Streams what each Claude Code agent is doing to Houston, and gives it the progress tool, whose plans and time left Houston shows."
     },
     {
       "name": "houston-skills",

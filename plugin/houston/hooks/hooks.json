@@ -1,5 +1,5 @@
 {
-  "description": "Streams what each Claude Code agent is doing to Houston.",
+  "description": "Streams what each Claude Code agent is doing to Houston, and keeps subagents off the progress tool.",
   "hooks": {
     "SessionStart": [
       {
@@ -19,6 +19,12 @@
       {
         "hooks": [
           { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-event.sh\"", "async": true }
+        ]
+      },
+      {
+        "matcher": "mcp__plugin_houston_eta__progress",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-progress-guard.sh\"", "timeout": 5 }
         ]
       }
     ],
