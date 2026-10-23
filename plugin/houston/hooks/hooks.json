@@ -8,6 +8,13 @@
         ]
       }
     ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-event.sh\"", "async": true }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [

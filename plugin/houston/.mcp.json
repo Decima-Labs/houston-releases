@@ -1,5 +1,6 @@
 {
   "mcpServers": {
-    "eta": { "command": "${CLAUDE_PLUGIN_ROOT}/scripts/houston-progress.sh" }
+    "eta": { "command": "${CLAUDE_PLUGIN_ROOT}/scripts/houston-progress.sh" },
+    "houston": { "command": "${CLAUDE_PLUGIN_ROOT}/scripts/houston-mcp.sh" }
   }
 }

@@ -13,23 +13,24 @@ socket="$HOME/Library/Application Support/Houston/events.sock"
 exec 2>/dev/null
 
 # A background job's stdin is /dev/null, so the sender reads the event on fd 3.
-# Houston gets only what it shows: which hook, session and folder; the tool's
-# name, its description and the file it touched, never a command, an edit or
-# what the tool returned; a notification's words; a stop's reason; the
-# subagent's id and type; and a prompt's first 80 characters. For the Agent
-# tool (Task in older Claude Code), the subagent type it asked for and whether
-# it runs in the background, never its prompt; and when a subagent finishes,
-# its last message and where its transcript is. The session's permission mode,
-# and on a stop how many shells it runs in the background, never their commands.
-# For a Bash call that opened or pushed to a pull request, which one, as Claude
-# Code itself reads the command: its number, link and branch, never the output.
-# Every string is cut to 300 characters, so no event can grow Houston's memory.
+# Houston gets only what it shows: which hook, session and folder, and why a
+# session started or ended; the tool's name, its description and the file it
+# touched, never a command, an edit or what the tool returned; a
+# notification's words; a stop's reason; the subagent's id and type; and a
+# prompt's first 80 characters. For the Agent tool (Task in older Claude
+# Code), the subagent type it asked for and whether it runs in the background,
+# never its prompt; and when a subagent finishes, its last message and where
+# its transcript is. The session's permission mode, and on a stop how many
+# shells it runs in the background, never their commands. For a Bash call that
+# opened or pushed to a pull request, which one, as Claude Code itself reads
+# the command: its number, link and branch, never the output. Every string is
+# cut to 300 characters, so no event can grow Houston's memory.
 exec 3<&0
 /usr/bin/jq -c '
   (.tool_name == "Agent" or .tool_name == "Task") as $spawns
   | (.hook_event_name == "SubagentStop") as $finished
   | {
-      hook_event_name, session_id, cwd, source, tool_name, tool_use_id,
+      hook_event_name, session_id, cwd, source, reason, tool_name, tool_use_id,
       message, title, notification_type, error, agent_id, agent_type, permission_mode,
       shells: (.background_tasks | if type == "array" then map(select(type == "object" and .type == "shell")) | length else null end),
       git: (if .hook_event_name == "PostToolUse" and .tool_name == "Bash" then (.tool_response | if type == "object" then .gitOperation else null end

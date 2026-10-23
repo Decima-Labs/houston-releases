@@ -1,6 +1,6 @@
 # Houston plugin for Claude Code
 
-Streams what each Claude Code agent is doing to Houston. On every session start, prompt, tool call (as it starts and as it finishes), permission request, notification, subagent start and finish, and stop, Claude Code runs `scripts/houston-event.sh`. The script picks out the few fields Houston shows and sends them to Houston as one line on `~/Library/Application Support/Houston/events.sock`.
+Streams what each Claude Code agent is doing to Houston. On every session start and end, prompt, tool call (as it starts and as it finishes), permission request, notification, subagent start and finish, and stop, Claude Code runs `scripts/houston-event.sh`. The script picks out the few fields Houston shows and sends them to Houston as one line on `~/Library/Application Support/Houston/events.sock`.
 
 A tool call shows the moment it starts, so a ten-minute build reads "Running swift build" while it runs, not the step before. Houston applies what each event says to its agent at once: working on a prompt or a tool call, waiting on a permission prompt, idle on a stop, failed on a stop failure. It doesn't wait for its next `claude agents` reading.
 
@@ -11,6 +11,20 @@ The plugin's MCP server, `eta` (`scripts/houston-progress.sh`), gives each sessi
 The server keeps nothing. It hands each call, with the session's id and the call's arguments, to Houston as one line on `~/Library/Application Support/Houston/progress.sock`, and passes Houston's one-line answer back as the tool's result. When Houston isn't running, or doesn't answer within 3 seconds, the result tells the agent to carry on without a progress bar. It needs `/usr/bin/jq`; without it the server exits, and Claude Code lists it as failed.
 
 Subagents and teammates share their session's server, so a call of theirs would take over the session's plan. `scripts/houston-progress-guard.sh`, a `PreToolUse` hook on the progress tool alone, refuses any call that carries an `agent_id`, with "Only the main thread reports progress; subagents are tracked automatically." It is the plugin's only hook that Claude Code waits for, and it reads nothing but the event on its stdin.
+
+## Houston's tools
+
+The plugin's second MCP server, `houston`, is `houston mcp`: the houston command Houston installs on your PATH (Houston › Install 'houston' Command in PATH…). `scripts/houston-mcp.sh` starts it, finding the command on the PATH, else in `~/.local/bin` or `/usr/local/bin`, else in Houston.app, so it starts whatever PATH Claude Code has. A houston from before `houston mcp` would take `mcp` for a folder to open, so it runs only a command whose help lists `houston mcp`. It lists the tools Houston has, asking Houston for them on `~/Library/Application Support/Houston/agent.sock`, with instructions that tell the agent when to reach for each, and hands each call to Houston as the session it's working for. An agent reads anything; changes what its session made; and anything else asks Sam first, on the bell and the iPhone. While Houston isn't running it lists the tools Houston last had, and each call says to carry on without it. Without a houston new enough, Claude Code lists the server as failed, `/mcp` shows why, and the rest of the plugin works as before.
+
+Codex has no plugins; once Houston is up to date, add the same server to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.houston]
+command = "houston"
+args = ["mcp"]
+```
+
+If Codex can't find `houston`, give the command's full path, such as `/Users/you/.local/bin/houston` (`command -v houston` prints it).
 
 ## Install
 
@@ -34,7 +48,7 @@ Only these fields leave the hook, picked out by `/usr/bin/jq` (shipped with macO
 
 | Field | What Houston does with it |
 |---|---|
-| `hook_event_name`, `session_id`, `cwd`, `source` | Which hook fired, for which session and folder |
+| `hook_event_name`, `session_id`, `cwd`, `source`, `reason` | Which hook fired, for which session and folder, and how a session started or why it ended, such as `resume` or `logout` |
 | `tool_name`, `tool_use_id` | The tool, and which call, so a call's start and finish make one row |
 | `tool_input.description`, `tool_input.file_path`, `tool_input.notebook_path` | What a call does, in words: a Bash call's description, never its command; the file an edit touched, never the edit |
 | `message`, `title`, `notification_type` | A notification, and whether it means the agent waits for you |
