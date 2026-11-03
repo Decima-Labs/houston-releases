@@ -39,6 +39,10 @@ To turn the rules off and keep the skills, use either:
 
 Either one turns them off. The hook prints nothing then, and it always exits 0, so a session never fails to start over it.
 
+## In Codex, Gemini CLI and Antigravity CLI
+
+This folder is also the one source of the skills and rules Houston gives Codex, Gemini CLI and Antigravity CLI, which take no Claude Code plugin. Houston.app carries a copy, and Settings › Agents › Codex, › Gemini CLI or › Antigravity CLI translates it for that agent as you turn Houston's tools and skills on: each skill is `houston-<name>`, so it never takes the place of one of yours, a skill named in another is called the agent's way (`$houston-tdd` in Codex, `/houston-tdd` in Antigravity CLI), and Claude Code's name, CLAUDE.md and AskUserQuestion become the agent's own. Codex gets the skills in `~/.codex/skills` and the rules at the end of `~/.codex/AGENTS.md`; Gemini CLI gets both in an extension of Houston's, `~/.gemini/extensions/houston`, and Antigravity CLI in a plugin of Houston's, `~/.gemini/config/plugins/houston`. Change a skill here and every agent's copy follows; Houston's tests fail on a change its translation doesn't cover.
+
 ## Where the skills come from, and their licences
 
 | Skills | Source | Licence |

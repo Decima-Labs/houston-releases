@@ -25,13 +25,53 @@ exec 2>/dev/null
 # opened or pushed to a pull request, which one, as Claude Code itself reads
 # the command: its number, link and branch, never the output. Every string is
 # cut to 300 characters, so no event can grow Houston's memory.
+#
+# As a call ends, two numbers let Houston tell an agent going round in circles,
+# running one command again and again and failing the same way, without ever
+# reading the command or its output: a Bash call's command as a digest, and how
+# a call failed as a digest of the lines of its error, or of a Bash call's
+# output, that say something failed, with their numbers taken out, so a test
+# run's timings and line numbers don't tell one run from the next. A digest is
+# the same for the same text and can't be read back. A failed call's error,
+# which is its output, never leaves.
+#
+# When a call asks you for permission, what lets Houston offer a rule once you
+# have allowed the same call three times in a day: a Bash call's command as the
+# same digest, so its end can be told for its own; its first three words, up
+# to the first that isn't a plain word, so never a quoted string, a variable,
+# an assignment or an option, each cut to 40 characters; and whether the
+# command chains, pipes or redirects. For a WebFetch, the domain of its link,
+# never the rest of it.
 exec 3<&0
 /usr/bin/jq -c '
+  def digest: reduce explode[] as $c (5381; (. * 33 + $c) % 2147483647) | tostring;
+  def failing: [.[-100000:] | split("\n")[]
+    | select(test("(?i:\\b(errors?|fail(ed|ing|ures?)?|fatal|panic(ked)?|exception|traceback)\\b)|[a-z](Error|Exception)\\b|\u2718|\u2717"))
+    | select(test("\\b(0|no) (errors?|fail(ed|ures?)?)\\b"; "i") | not)
+    | gsub("[0-9]+"; "#")];
+  def failure: failing | if length > 0 then join("\n") | digest else null end;
   (.tool_name == "Agent" or .tool_name == "Task") as $spawns
   | (.hook_event_name == "SubagentStop") as $finished
+  | (.hook_event_name == "PostToolUseFailure") as $failed
+  | (.hook_event_name == "PermissionRequest") as $asks
+  | (if $asks and .tool_name == "Bash" then (.tool_input | if type == "object" then .command else null end | if type == "string" then . else null end) else null end) as $command
   | {
       hook_event_name, session_id, cwd, source, reason, tool_name, tool_use_id,
-      message, title, notification_type, error, agent_id, agent_type, permission_mode,
+      message, title, notification_type, agent_id, agent_type, permission_mode,
+      error: (if $failed then null else .error end),
+      command_hash: (if (.hook_event_name == "PostToolUse" or $failed or $asks) and .tool_name == "Bash" then
+        (.tool_input | if type == "object" then .command else null end | if type == "string" then digest else null end) else null end),
+      failure_hash: (if $failed then
+          (if .is_interrupt == true then null else (.error | if type == "string" then failure // (.[-100000:] | gsub("[0-9]+"; "#") | digest) else null end) end)
+        elif .hook_event_name == "PostToolUse" and .tool_name == "Bash" then
+          (.tool_response | if type == "object" then [.stdout, .stderr] | map(strings) | join("\n") | failure else null end)
+        else null end),
+      command_words: ($command | if . == null then null else
+        [splits("[ \t]+") | select(length > 0)] | .[0:3] | until(all(test("^[A-Za-z0-9._/+@:][A-Za-z0-9._/+@:-]{0,39}$")); .[:-1]) end),
+      command_compound: ($command | if . == null then null else test("[;&|`\n<>]|\\$\\(") end),
+      fetch_domain: (if $asks and .tool_name == "WebFetch" then
+        ([.tool_input | if type == "object" then .url else null end | strings | capture("^[A-Za-z][A-Za-z0-9+.-]*://(?:[^/@?#]*@)?(?<host>[A-Za-z0-9.-]+)")] | .[0].host | if . == null then null else ascii_downcase end)
+        else null end),
       shells: (.background_tasks | if type == "array" then map(select(type == "object" and .type == "shell")) | length else null end),
       git: (if .hook_event_name == "PostToolUse" and .tool_name == "Bash" then (.tool_response | if type == "object" then .gitOperation else null end
         | if type == "object" then {

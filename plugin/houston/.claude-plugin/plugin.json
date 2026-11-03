@@ -1,6 +1,6 @@
 {
   "name": "houston",
-  "description": "Streams what each Claude Code agent is doing to Houston, the Mac app: sessions starting and ending, prompts, tool calls, permission requests, notifications, subagents and stops; the progress tool, whose plans Houston shows with their time left; and Houston's own tools, through houston mcp.",
-  "version": "0.4.2",
+  "description": "Streams what each Claude Code agent is doing to Houston, the Mac app: sessions starting and ending, prompts, tool calls and how they ended, permission requests, notifications, subagents and stops; answers to its permission prompts from Houston's permission card; the progress tool, whose plans Houston shows with their time left; Houston's own tools, through houston mcp; Houston's browser as every session's browser; and artifacts kept on this Mac, when Houston's setting says so.",
+  "version": "0.8.3",
   "author": { "name": "Decima Labs" }
 }

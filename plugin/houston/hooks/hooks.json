@@ -1,10 +1,20 @@
 {
-  "description": "Streams what each Claude Code agent is doing to Houston, and keeps subagents off the progress tool.",
+  "description": "Streams what each Claude Code agent is doing to Houston, lets Houston answer its permission prompts, keeps subagents off the progress tool, keeps artifacts where Houston says, and tells each session to use Houston's browser.",
   "hooks": {
     "SessionStart": [
       {
         "hooks": [
           { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-event.sh\"", "async": true }
+        ]
+      },
+      {
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-artifacts.sh\"", "timeout": 5 }
+        ]
+      },
+      {
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-browser.sh\"", "timeout": 5 }
         ]
       }
     ],
@@ -33,9 +43,22 @@
         "hooks": [
           { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-progress-guard.sh\"", "timeout": 5 }
         ]
+      },
+      {
+        "matcher": "Artifact",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-artifacts.sh\"", "timeout": 5 }
+        ]
       }
     ],
     "PostToolUse": [
+      {
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-event.sh\"", "async": true }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
       {
         "hooks": [
           { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-event.sh\"", "async": true }
@@ -46,6 +69,11 @@
       {
         "hooks": [
           { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-event.sh\"", "async": true }
+        ]
+      },
+      {
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/houston-permission.sh\"", "timeout": 330 }
         ]
       }
     ],

@@ -8,7 +8,7 @@ This repository holds Houston's releases and its Claude Code plugins. Houston's 
 
 Download `Houston-<version>.dmg` from the [latest release](https://github.com/Decima-Labs/houston-releases/releases/latest), open it, and drag Houston onto Applications. Houston is signed by Apple Developer team 262X2S8YKN and notarized by Apple, so it opens like any app from the internet: the first time, macOS asks whether to open it.
 
-Houston keeps itself up to date. It checks this repository for a new release every hour, and **Update Houston…** in the Houston menu checks at once. An update is installed only when you click Update, and only once Houston has checked that the download matches its checksum, that Apple Developer team 262X2S8YKN signed it, and that Apple notarized it. Restarting to finish is a click of its own, since quitting Houston closes its terminals. With Gatekeeper turned off, Houston can't check notarization, so it doesn't update itself; download the new release from here instead.
+Houston keeps itself up to date. It checks this repository for a new release every hour, and **Update Houston…** in the Houston menu checks at once. It installs an update by itself, unless you turn off Settings › Updates › Install updates automatically, and only once Houston has checked that the download matches its checksum, that Apple Developer team 262X2S8YKN signed it, and that Apple notarized it. Restarting to finish is a click of its own, since quitting Houston closes its terminals. With Gatekeeper turned off, Houston can't check notarization, so it doesn't update itself; download the new release from here instead.
 
 ## What you need
 
@@ -20,15 +20,15 @@ Houston keeps itself up to date. It checks this repository for a new release eve
   - git, for a worktree per agent: macOS offers to install it, with Xcode's command line tools, the first time anything runs it.
   - [Vercel CLI](https://vercel.com/docs/cli) (`vercel`), for deployments.
 
-Settings › Integrations also folds one integration under Advanced that most people can't use yet: Claude accounts, which needs cc-acct, an account switcher that isn't published.
+Houston also reads Claude accounts through cc-acct, an account switcher that isn't published, when it finds it.
 
-Claude Code sessions Houston starts ask you before they run a command, edit a file or use your browser, as Claude Code does anywhere, unless you tick the boxes in Settings › Integrations › Claude Code that let them skip permission prompts or use Claude in Chrome. Houston stops a Claude Code background session left idle for two days, keeping its conversation, and Continue in Houston brings it back; Settings › Integrations › Claude Code sets how long, or Never.
+Claude Code sessions Houston starts ask you before they run a command or edit a file, as Claude Code does anywhere, unless you turn on Settings › Agents › Claude Code › Skip permission prompts. Houston stops a Claude Code background session left idle for two days, keeping its conversation, and Continue in Houston brings it back; Settings › Agents › Claude Code › Stop sessions idle for sets how long, or Never.
 
-Houston finds these the way your terminal does, through your login shell's PATH. It reads them only through their command-line interfaces. Apart from asking this repository for new releases, it sends nothing anywhere of its own, and it never logs the tokens your shell exports. Houston for iPad isn't on the App Store yet, and runs only when built from Houston's source, so its sharing is off until you turn it on in Settings › Permissions: then Houston writes what it shows to a board in your own iCloud, which only devices signed in to your Apple Account can read.
+Houston finds these the way your terminal does, through your login shell's PATH. It reads them only through their command-line interfaces, and it never logs the tokens your shell exports. What it reads stays on your Mac, or in your own iCloud when you choose; of its own it asks this repository for new releases, checks that the network lets Claude through, and sends crash reports to Decima Labs only if you turn them on. Sharing with Houston for iPhone and iPad is off until you turn on Settings › Devices › iPhone & iPad › Share with Houston for iPhone and iPad: then Houston writes what it shows to a board in your own iCloud, which only devices signed in to your Apple Account can read.
 
 ## The Claude Code plugin
 
-Houston's plugin streams what each agent is doing to Houston the moment it happens: each prompt, tool call, permission request and stop. Houston's welcome offers to install it, with Houston's skills, once Claude Code is on; Settings › Permissions offers it again later. To install it yourself, add this repository as a plugin marketplace, then install the plugin:
+Houston's plugin streams what each agent is doing to Houston the moment it happens: each prompt, tool call, permission request and stop. Houston's welcome offers to install it, with Houston's skills, once Claude Code is on; Settings › Agents › Claude Code › Live activity plugin offers it again later. To install it yourself, add this repository as a plugin marketplace, then install the plugin:
 
 ```bash
 claude plugin marketplace add Decima-Labs/houston-releases
